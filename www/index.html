@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 Đếm ngược sinh nhật 🎉</title>
+    <script src="https://unpkg.com/@capacitor/core@latest/dist/capacitor.js"></script>
+    <script src="https://unpkg.com/@capacitor/local-notifications@latest"></script>
+    <script src="https://unpkg.com/@capacitor/share@latest"></script>
+    <script src="https://unpkg.com/@capacitor/device@latest"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #ff6363;
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ff6363;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        input:focus {
+            border-color: #ff3b3b;
+        }
+
+        button {
+            background: #ff6363;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #ff3b3b;
+        }
+
+        p {
+            font-size: 18px;
+            color: #333;
+            margin-top: 15px;
+        }
+
+        #batteryStatus {
+            font-size: 14px;
+            color: green;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎂 Đếm ngược sinh nhật 🎉</h1>
+        <input type="text" id="birthDate" placeholder="Nhập ngày sinh (dd/mm)">
+        <button onclick="calculateDays()">Tính ngày còn lại</button>
+        <p id="result"></p>
+        <button onclick="shareResult()">📤 Chia sẻ kết quả</button>
+        <p id="batteryStatus">🔋 Trạng thái pin: Đang tải...</p>
+    </div>
+
+    <script>
+        const { LocalNotifications, Share, Device } = Capacitor.Plugins;
+
+        function calculateDays() {
+            let inputDate = document.getElementById("birthDate").value;
+            let [day, month] = inputDate.split("/").map(Number);
+            let currentDate = new Date();
+            let currentYear = currentDate.getFullYear();
+            
+            if (!day || !month || day > 31 || month > 12) {
+                alert("⚠️ Vui lòng nhập ngày sinh hợp lệ (dd/mm)!");
+                return;
+            }
+
+            let nextBirthday = new Date(currentYear, month - 1, day);
+            if (nextBirthday < currentDate) {
+                nextBirthday.setFullYear(currentYear + 1);
+            }
+
+            let diffTime = nextBirthday - currentDate;
+            let daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            document.getElementById("result").innerText = `🎉 Còn ${daysLeft} ngày đến sinh nhật của bạn! 🎂`;
+
+            // Hiển thị thông báo cục bộ
+            LocalNotifications.schedule({
+                notifications: [
+                    {
+                        title: "🎂 Đếm ngược sinh nhật",
+                        body: `Chỉ còn ${daysLeft} ngày nữa là đến sinh nhật của bạn! 🎈`,
+                        id: 1
+                    }
+                ]
+            });
+        }
+
+        function shareResult() {
+            let resultText = document.getElementById("result").innerText;
+            if (!resultText) {
+                alert("⚠️ Chưa có kết quả để chia sẻ!");
+                return;
+            }
+
+            Share.share({
+                title: "🎂 Đếm ngược sinh nhật",
+                text: resultText,
+                url: "https://example.com",
+                dialogTitle: "📤 Chia sẻ số ngày còn lại"
+            });
+        }
+
+        async function getBatteryStatus() {
+            try {
+                const batteryInfo = await Device.getBatteryInfo();
+                document.getElementById("batteryStatus").innerText = `🔋 Pin: ${batteryInfo.batteryLevel * 100}% - ${
+                    batteryInfo.isCharging ? "⚡ Đang sạc" : "🔌 Không sạc"
+                }`;
+            } catch (error) {
+                document.getElementById("batteryStatus").innerText = "⚠️ Không thể lấy trạng thái pin.";
+            }
+        }
+
+        getBatteryStatus();
+    </script>
+</body>
+</html>
