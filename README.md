@@ -6,5 +6,5 @@ Cách chạy ứng dung:
 Nhập vào ngày sinh => nhấn nút tính ngày còn lại.
 Nhập chia sẻ kết quả để chia sẽ kết quả vừa tính được.
 Nhấn xem trạng thái pin.
-![image](https://github.com/user-attachments/assets/898d483a-f9a7-48b0-be98-6b5ccd8000b2) ![image](https://github.com/user-attachments/assets/218aadf7-6dc3-4654-bd99-e7c97ec0776e)
-
+![image](https://github.com/user-attachments/assets/898d483a-f9a7-48b0-be98-6b5ccd8000b2)
+![image](https://github.com/user-attachments/assets/218aadf7-6dc3-4654-bd99-e7c97ec0776e)
